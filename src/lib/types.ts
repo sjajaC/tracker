@@ -19,6 +19,8 @@ export interface Habit {
   /** daily target when measurable */
   target: number
   unit: string
+  /** quit habits: hedef temiz gün sayısı (challenge). 0 = hedef yok */
+  goalStreak: number
   note: string
   createdAt: string
   archived: boolean

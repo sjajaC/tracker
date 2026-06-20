@@ -141,6 +141,7 @@ const SAMPLE_HABITS: Omit<Habit, "id" | "createdAt" | "archived" | "order">[] = 
     measurable: true,
     target: 8,
     unit: "bardak",
+    goalStreak: 0,
     note: "",
   },
   {
@@ -155,6 +156,7 @@ const SAMPLE_HABITS: Omit<Habit, "id" | "createdAt" | "archived" | "order">[] = 
     measurable: true,
     target: 20,
     unit: "dk",
+    goalStreak: 0,
     note: "",
   },
   {
@@ -169,6 +171,7 @@ const SAMPLE_HABITS: Omit<Habit, "id" | "createdAt" | "archived" | "order">[] = 
     measurable: false,
     target: 1,
     unit: "",
+    goalStreak: 0,
     note: "",
   },
   {
@@ -183,6 +186,7 @@ const SAMPLE_HABITS: Omit<Habit, "id" | "createdAt" | "archived" | "order">[] = 
     measurable: false,
     target: 1,
     unit: "",
+    goalStreak: 90,
     note: "Her temiz gün bir kazanım.",
   },
 ]

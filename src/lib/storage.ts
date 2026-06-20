@@ -22,9 +22,12 @@ export function loadData(): AppData {
     const raw = localStorage.getItem(KEY)
     if (!raw) return emptyData()
     const parsed = JSON.parse(raw) as Partial<AppData>
+    const habits = (Array.isArray(parsed.habits) ? parsed.habits : []).map(
+      (h) => ({ ...h, goalStreak: h.goalStreak ?? 0 })
+    )
     return {
       version: DATA_VERSION,
-      habits: Array.isArray(parsed.habits) ? parsed.habits : [],
+      habits,
       logs: parsed.logs && typeof parsed.logs === "object" ? parsed.logs : {},
       settings: { ...defaultSettings, ...(parsed.settings ?? {}) },
     }
