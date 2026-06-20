@@ -1,10 +1,10 @@
 name: Deploy to GitHub Pages
 
-# Varsayılan dala (main/master) push'ta otomatik yayınla.
+# Tek dal akışı: bu dala her push'ta otomatik yayınla.
 # Manuel tetikleme de mümkün (Actions sekmesi → Run workflow).
 on:
   push:
-    branches: [main, master]
+    branches: [claude/mobile-habit-tracker-3h2lh2]
   workflow_dispatch:
 
 # Pages'e deploy için gerekli izinler

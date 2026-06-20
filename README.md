@@ -52,13 +52,12 @@ npm run preview    # derlemeyi yerel önizle
 
 ## 🌐 Canlıya alma (GitHub Pages)
 
-Proje, push'ta otomatik yayınlanacak şekilde **GitHub Actions + GitHub Pages** ile kuruludur (`.github/workflows/deploy.yml`).
+Proje **tek dal** akışıyla, push'ta otomatik yayınlanacak şekilde **GitHub Actions + GitHub Pages** ile kuruludur (`.github/workflows/deploy.yml`). Çalıştığın `claude/mobile-habit-tracker-3h2lh2` dalına her push, siteyi otomatik günceller — ayrı `main` dalı veya PR'a gerek yok.
 
 **İlk kurulum (tek seferlik):**
-1. Bu dalı **`main`** dalına birleştir (veya `main`'e push'la). Workflow yalnızca `main`/`master`'a push'ta tetiklenir.
-2. GitHub'da depoda: **Settings → Pages → Build and deployment → Source = “GitHub Actions”** seç.
+1. GitHub'da depoda: **Settings → Pages → Build and deployment → Source = “GitHub Actions”** seç.
    (Workflow bunu otomatik açmayı dener; yine de kapalıysa buradan aç.)
-3. **Actions** sekmesinden “Deploy to GitHub Pages” çalışmasının yeşil olmasını bekle.
+2. **Actions** sekmesinden “Deploy to GitHub Pages” çalışmasının yeşil olmasını bekle.
 
 Yayınlanan adres: **`https://<kullanıcı-adı>.github.io/tracker/`**
 
