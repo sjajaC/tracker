@@ -50,6 +50,24 @@ npm run preview    # derlemeyi yerel önizle
 
 > Telefonda “uygulama gibi” denemek için: tarayıcıda aç → menüden **“Ana ekrana ekle”**.
 
+## 🌐 Canlıya alma (GitHub Pages)
+
+Proje, push'ta otomatik yayınlanacak şekilde **GitHub Actions + GitHub Pages** ile kuruludur (`.github/workflows/deploy.yml`).
+
+**İlk kurulum (tek seferlik):**
+1. Bu dalı **`main`** dalına birleştir (veya `main`'e push'la). Workflow yalnızca `main`/`master`'a push'ta tetiklenir.
+2. GitHub'da depoda: **Settings → Pages → Build and deployment → Source = “GitHub Actions”** seç.
+   (Workflow bunu otomatik açmayı dener; yine de kapalıysa buradan aç.)
+3. **Actions** sekmesinden “Deploy to GitHub Pages” çalışmasının yeşil olmasını bekle.
+
+Yayınlanan adres: **`https://<kullanıcı-adı>.github.io/tracker/`**
+
+**Notlar**
+- Vite `base` yolu CI'da otomatik olarak `/<repo-adı>/` (yani `/tracker/`) ayarlanır; bu sayede CSS/JS/PWA dosyaları alt yolda 404 olmaz. Lokal geliştirmede `/` kullanılır.
+- Depo adını değiştirirsen base otomatik uyum sağlar (repo adından okunur).
+- Özel alan adı (custom domain) veya `kullanıcı.github.io` kök sitesi kullanacaksan base'i `/` yapmak için workflow'daki `BASE_PATH`'i kaldır.
+- Manuel yayın: **Actions → Deploy to GitHub Pages → Run workflow**.
+
 ## 🧱 Teknolojiler
 
 - **React 19** + **TypeScript** + **Vite**

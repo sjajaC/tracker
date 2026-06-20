@@ -4,9 +4,11 @@ import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import { VitePWA } from "vite-plugin-pwa"
 
+// GitHub Pages bir alt yolda servis eder (ör. /tracker/). Bu yol CI'da
+// BASE_PATH ile geçilir; lokal geliştirmede kök "/" kullanılır.
 // https://vite.dev/config/
 export default defineConfig({
-  base: "./",
+  base: process.env.BASE_PATH || "/",
   plugins: [
     react(),
     tailwindcss(),
