@@ -13,6 +13,9 @@ export function emptyData(): AppData {
     version: DATA_VERSION,
     habits: [],
     logs: {},
+    todos: [],
+    routines: [],
+    routineLogs: {},
     settings: { ...defaultSettings },
   }
 }
@@ -29,6 +32,12 @@ export function loadData(): AppData {
       version: DATA_VERSION,
       habits,
       logs: parsed.logs && typeof parsed.logs === "object" ? parsed.logs : {},
+      todos: Array.isArray(parsed.todos) ? parsed.todos : [],
+      routines: Array.isArray(parsed.routines) ? parsed.routines : [],
+      routineLogs:
+        parsed.routineLogs && typeof parsed.routineLogs === "object"
+          ? parsed.routineLogs
+          : {},
       settings: { ...defaultSettings, ...(parsed.settings ?? {}) },
     }
   } catch (e) {

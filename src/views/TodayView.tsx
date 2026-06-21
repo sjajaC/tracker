@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useMemo } from "react"
-import type { Habit } from "@/lib/types"
+import type { Habit, Routine, Todo } from "@/lib/types"
 import type { HabitsApi } from "@/hooks/useHabits"
 import {
   computeStreak,
@@ -10,20 +10,30 @@ import {
   isScheduled,
   todayCompletion,
 } from "@/lib/habits"
+import {
+  dueInfo,
+  routineProgress,
+  routineScheduled,
+  subtaskProgress,
+} from "@/lib/tasks"
 import { colorVar } from "@/lib/constants"
 import { addDays, dateKey, relativeDayLabel, startOfDay } from "@/lib/date"
 import { Ring } from "@/components/Charts"
 import { Button } from "@/components/ui/button"
-import { Check, Flame, Plus, Minus } from "lucide-react"
+import { Check, Flame, Plus, Minus, ChevronRight, CalendarDays } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
 export function TodayView({
   api,
   onOpenDetail,
+  onOpenRoutine,
+  onEditTodo,
 }: {
   api: HabitsApi
   onOpenDetail: (h: Habit) => void
+  onOpenRoutine: (r: Routine) => void
+  onEditTodo: (t: Todo) => void
 }) {
   const today = startOfDay(new Date())
   const todayKey = dateKey(today)
@@ -37,12 +47,30 @@ export function TodayView({
     [api.data.habits, todayKey]
   )
 
+  const todayRoutines = useMemo(
+    () =>
+      api.data.routines
+        .filter((r) => !r.archived && routineScheduled(r, today))
+        .sort((a, b) => a.order - b.order),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [api.data.routines, todayKey]
+  )
+
+  // bugüne ait / gecikmiş açık görevler
+  const todayTodos = api.data.todos
+    .filter((t) => !t.done && t.due && t.due <= todayKey)
+    .sort((a, b) => (a.due! < b.due! ? -1 : 1))
+
   const summary = todayCompletion(api.data.habits, api.data.logs)
   const done = scheduled.filter((h) => isDone(h, api.data.logs, todayKey))
   const pending = scheduled.filter((h) => !isDone(h, api.data.logs, todayKey))
 
-  // 7-day strip
   const strip = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6))
+
+  const nothing =
+    scheduled.length === 0 &&
+    todayRoutines.length === 0 &&
+    todayTodos.length === 0
 
   return (
     <div className="flex flex-col gap-4 pb-28">
@@ -92,9 +120,89 @@ export function TodayView({
         </div>
       )}
 
-      {/* Yapılacaklar */}
+      {/* Bugünün rutinleri */}
+      {todayRoutines.length > 0 && (
+        <Group title="Rutinler" count={todayRoutines.length}>
+          {todayRoutines.map((r) => {
+            const prog = routineProgress(r, api.data.routineLogs, todayKey)
+            return (
+              <button
+                key={r.id}
+                onClick={() => onOpenRoutine(r)}
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl border bg-card p-3 text-left transition-colors",
+                  prog.total > 0 && prog.done === prog.total && "opacity-70"
+                )}
+              >
+                <span
+                  className="grid size-11 shrink-0 place-items-center rounded-xl text-xl"
+                  style={{ background: colorVar(r.color), opacity: 0.95 }}
+                >
+                  {r.icon}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium">{r.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {prog.done}/{prog.total} adım
+                  </p>
+                </div>
+                <Ring value={prog.rate} size={38} stroke={4} color={colorVar(r.color)}>
+                  {prog.total > 0 && prog.done === prog.total ? (
+                    <Check className="size-4" style={{ color: colorVar(r.color) }} />
+                  ) : (
+                    <ChevronRight className="size-4 text-muted-foreground" />
+                  )}
+                </Ring>
+              </button>
+            )
+          })}
+        </Group>
+      )}
+
+      {/* Bugünün görevleri */}
+      {todayTodos.length > 0 && (
+        <Group title="Görevler" count={todayTodos.length}>
+          {todayTodos.map((t) => {
+            const due = dueInfo(t.due)
+            const sub = subtaskProgress(t)
+            return (
+              <div
+                key={t.id}
+                className="flex items-center gap-3 rounded-2xl border bg-card p-3"
+              >
+                <button
+                  onClick={() => api.toggleTodo(t.id)}
+                  aria-label="Tamamla"
+                  className="grid size-7 shrink-0 place-items-center rounded-full border-2 border-muted-foreground/30 transition-all active:scale-90"
+                />
+                <button onClick={() => onEditTodo(t)} className="min-w-0 flex-1 text-left">
+                  <p className="truncate font-medium">{t.title}</p>
+                  <p className="flex items-center gap-2 text-xs">
+                    <span
+                      className={cn(
+                        "inline-flex items-center gap-1",
+                        due.tone === "overdue" ? "text-destructive" : "text-primary"
+                      )}
+                    >
+                      <CalendarDays className="size-3" />
+                      {due.label}
+                    </span>
+                    {sub.total > 0 && (
+                      <span className="text-muted-foreground">
+                        ✓ {sub.done}/{sub.total}
+                      </span>
+                    )}
+                  </p>
+                </button>
+              </div>
+            )
+          })}
+        </Group>
+      )}
+
+      {/* Alışkanlıklar */}
       {pending.length > 0 && (
-        <Group title="Kalanlar" count={pending.length}>
+        <Group title="Alışkanlıklar" count={pending.length}>
           {pending.map((h) => (
             <TodayCard
               key={h.id}
@@ -108,7 +216,7 @@ export function TodayView({
       )}
 
       {done.length > 0 && (
-        <Group title="Tamamlananlar" count={done.length}>
+        <Group title="Tamamlanan alışkanlıklar" count={done.length}>
           {done.map((h) => (
             <TodayCard
               key={h.id}
@@ -121,9 +229,7 @@ export function TodayView({
         </Group>
       )}
 
-      {scheduled.length === 0 && (
-        <EmptyToday hasHabits={api.data.habits.length > 0} api={api} />
-      )}
+      {nothing && <EmptyToday hasHabits={api.data.habits.length > 0} api={api} />}
     </div>
   )
 }

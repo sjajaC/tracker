@@ -45,5 +45,61 @@ export interface AppData {
   version: number
   habits: Habit[]
   logs: Logs
+  todos: Todo[]
+  routines: Routine[]
+  /** routineLogs[routineId][YYYY-MM-DD] = tamamlanan adım id'leri */
+  routineLogs: Record<string, Record<string, string[]>>
   settings: Settings
+}
+
+/* ----------------------------- Görevler (TODO) ---------------------------- */
+
+export type Priority = "low" | "medium" | "high"
+
+export interface SubTask {
+  id: string
+  title: string
+  done: boolean
+}
+
+export interface Todo {
+  id: string
+  title: string
+  notes: string
+  priority: Priority
+  category: string
+  /** bitiş tarihi YYYY-MM-DD veya null */
+  due: string | null
+  subtasks: SubTask[]
+  done: boolean
+  completedAt: string | null
+  createdAt: string
+  order: number
+}
+
+/* ------------------------------- Rutinler -------------------------------- */
+
+export type TimeOfDay = "morning" | "afternoon" | "evening" | "anytime"
+
+export interface RoutineStep {
+  id: string
+  title: string
+  /** süre (dk), 0 = belirtilmemiş */
+  minutes: number
+}
+
+export interface Routine {
+  id: string
+  name: string
+  icon: string
+  color: string
+  timeOfDay: TimeOfDay
+  /** "07:30" gibi; boş olabilir */
+  time: string
+  /** uygulanacak günler (0=Paz..6=Cmt); boş = her gün */
+  days: number[]
+  steps: RoutineStep[]
+  createdAt: string
+  order: number
+  archived: boolean
 }
